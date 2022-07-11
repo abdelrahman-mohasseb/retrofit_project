@@ -5,8 +5,12 @@ import 'package:retrofit_project/ui/parts/circular_indicator.dart';
 
 import '../Providers/navigation_provider.dart';
 
+// *************************************** 
+// the screen at the begining of the app
+// ***************************************
+
 class SplashScreen extends StatefulWidget {
-  SplashScreen({Key? key}) : super(key: key);
+  const SplashScreen({Key? key}) : super(key: key);
 
   @override
   _SplashScreenState createState() => _SplashScreenState();
@@ -17,14 +21,12 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     final dogProvider = context.watch<DogProvider>();
     return FutureBuilder(
-        future: getDogsInformations(context, dogProvider),
+        future: getDogsInformations( dogProvider),
         builder: (context, snapshot) {
-          print("snapShot ${snapshot.hasData}");
-          print("snapShot ${snapshot.data}");
           if (!snapshot.hasData) {
-            return Scaffold(
+            return const Scaffold(
                 body: Center(
-                    child: Container(child: CircularIndicator("Loading..."))));
+                    child: CircularIndicator("Loading...")));
           } 
             else {
               return Consumer<NavigationProvider>(
@@ -93,10 +95,9 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<bool> getDogsInformations(
-          BuildContext context, DogProvider dogProvider) =>
+           DogProvider dogProvider) =>
       Future.delayed(const Duration(seconds: 2), () async {
-        var response = dogProvider.fetchDogsInformations(context);
-
+        var response = dogProvider.fetchDogsInformations();
         return response;
       });
 }

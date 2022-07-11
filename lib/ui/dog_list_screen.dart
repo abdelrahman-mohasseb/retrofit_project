@@ -1,15 +1,25 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:retrofit_project/Model/dog.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:retrofit_project/model/dog.dart';
+import 'package:retrofit_project/ui/parts/circular_indicator.dart';
+
 import 'package:retrofit_project/ui/parts/dog_card.dart';
 
 import '../Providers/dog_provider.dart';
 
+// ******************************************************************
+// the tab representing the list of all dogs fetched by the network
+// ******************************************************************
+
 class DogListScreen extends StatefulWidget {
   static const route = '/dogList';
+
+  const DogListScreen({Key? key}) : super(key: key);
   @override
   _DogListScreenState createState() => _DogListScreenState();
 }
@@ -61,7 +71,7 @@ class _DogListScreenState extends State<DogListScreen> {
     final dogProvider = context.watch<DogProvider>();
     return SafeArea(
         child: Scaffold(
-            body: Container(
+            body: SizedBox(
                 height: MediaQuery.of(context).size.height,
                 width: MediaQuery.of(context).size.width,
                 child: ListView(
@@ -78,7 +88,7 @@ class _DogListScreenState extends State<DogListScreen> {
                               itemBuilder: (BuildContext context, int index) {
                                 return DogCard(
                                   dog: dogProvider.dogsInformations[index],
-                                  seeDetail: seeDetail,
+                                  seeDetail: seeDetailDialog,
                                 );
                               },
                             )
@@ -88,7 +98,9 @@ class _DogListScreenState extends State<DogListScreen> {
                 ))));
   }
 
-  seeDetail(Dog dog) async {
+  /// method defined when the user click on an element of the list to see the details of each dog breed
+
+  void seeDetailDialog(Dog dog) async {
     if (Platform.isAndroid) {
       // set up the button
       Widget okButton = TextButton(
@@ -107,14 +119,28 @@ class _DogListScreenState extends State<DogListScreen> {
               child: Column(
                 children: [
                   (dog.referenceImageID != null && dog.referenceImageID != "")
-                      ? Container(
-                          width: MediaQuery.of(context).size.width,
-                          height: MediaQuery.of(context).size.height / 2.5,
-                          decoration: BoxDecoration(
-                            image: DecorationImage(
+                      ? CachedNetworkImage(
+                          imageUrl: dog.dogImageURL,
+                          imageBuilder: (context, imageProvider) => Container(
+                            width: MediaQuery.of(context).size.width,
+                            height: MediaQuery.of(context).size.height / 2.5,
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                image: imageProvider,
                                 fit: BoxFit.contain,
-                                image: NetworkImage(dog.dogImageURL)),
+                              ),
+                            ),
                           ),
+                          placeholder: (context, url) => SizedBox(
+                              width: MediaQuery.of(context).size.width,
+                              height: MediaQuery.of(context).size.height / 2.5,
+                              child: const CircularIndicator("Loading ...")),
+                          errorWidget: (context, url, error) => SizedBox(
+                              width: MediaQuery.of(context).size.width,
+                              height: MediaQuery.of(context).size.height / 2.5,
+                              child: Image.asset(
+                                "assets/images/dogs.png",
+                              )),
                         )
                       : const SizedBox(),
                   (dog.lifeSpan != null && dog.lifeSpan != "")
@@ -191,13 +217,22 @@ class _DogListScreenState extends State<DogListScreen> {
                 child: Column(
                   children: [
                     (dog.referenceImageID != null && dog.referenceImageID != "")
-                        ? Container(
-                            width: MediaQuery.of(context).size.width,
-                            height: MediaQuery.of(context).size.height / 2.5,
-                            decoration: BoxDecoration(
-                              image: DecorationImage(
+                        ? CachedNetworkImage(
+                            imageUrl: dog.dogImageURL,
+                            imageBuilder: (context, imageProvider) => Container(
+                              width: MediaQuery.of(context).size.width,
+                              height: MediaQuery.of(context).size.height / 2.5,
+                              decoration: BoxDecoration(
+                                image: DecorationImage(
+                                  image: imageProvider,
                                   fit: BoxFit.contain,
-                                  image: NetworkImage(dog.dogImageURL)),
+                                ),
+                              ),
+                            ),
+                            placeholder: (context, url) =>
+                                const CircularIndicator("Loading ..."),
+                            errorWidget: (context, url, error) => Image.asset(
+                              "assets/images/dogs.png",
                             ),
                           )
                         : const SizedBox(),

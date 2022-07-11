@@ -1,6 +1,10 @@
 import 'package:json_annotation/json_annotation.dart';
 part 'login.g.dart';
 
+// **************************************************************
+// Login model data send to make login or signUp within the app
+// **************************************************************
+
 @JsonSerializable()
 class Login {
   String? email;

@@ -1,28 +1,26 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
-
+import 'package:retrofit_project/model/api_response.dart';
 import '../ApiClients/dog_api_client.dart';
-import '../Model/api_response.dart';
+
+// ********************************************************************************************************************************************
+// Dog repository to respect the MVVM architecture and seperate how the data is fetched from the server and the view that represents the data
+// ********************************************************************************************************************************************
+
 
 class DogRepository {
   final DogRestClient _client;
 
   DogRepository() : _client = DogRestClient(Dio());
 
-  Future<ApiResponse> fetchAllDogsInformations(int limit) async {
-    if (limit == null) {
-      return ApiResponse(ApiResponseType.BadRequest, null);
-    }
+  /// handles the apiResponse to get the result in case of success and error
 
-    // var response = await _client.getDogsBreedInformations(limit);
-
+  Future<ApiResponse> fetchAllDogsInformations() async {
     return await _client
-        .getDogsBreedInformations(limit)
-        .then((value) => ApiResponse(ApiResponseType.OK, value))
+        .getDogsBreedInformations()
+        .then((value) => ApiResponse(ApiResponseType.ok, value))
         .catchError((e) {
       int errorCode = 0;
       String errorMessage = "";
-      print(e);
       switch (e.runtimeType) {
         case DioError:
           final res = (e as DioError).response;
@@ -34,8 +32,6 @@ class DogRepository {
         default:
           errorMessage = e;
       }
-      print("there is an error : $errorCode -> $errorMessage");
-
       var apiResponseType = ApiResponse.convert(errorCode);
       return ApiResponse(apiResponseType, errorMessage);
     });

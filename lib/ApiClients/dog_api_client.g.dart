@@ -18,9 +18,9 @@ class _DogRestClient implements DogRestClient {
   String? baseUrl;
 
   @override
-  Future<List<Dog>> getDogsBreedInformations(limit) async {
+  Future<List<Dog>> getDogsBreedInformations() async {
     const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{r'limit': limit};
+    final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{
       r'x-api-key': '8aa4cbe9-6683-4cbe-892e-b0d4e914f2e7'
     };

@@ -1,6 +1,10 @@
 import 'package:json_annotation/json_annotation.dart';
 part 'dog.g.dart';
 
+// ***********************************************************************************
+// Dog model data to get all the informations related to the details of each dog breed
+// ***********************************************************************************
+
 @JsonSerializable()
 class Dog {
   int? id;
@@ -32,13 +36,15 @@ class Dog {
   Map<String, dynamic> toJson() => _$DogToJson(this);
 }
 
+/// extension used to get the url of an image of each dog breed to use with Image.network()
+
 extension Helpers on Dog {
   String get dogImageURL {
-    if (this.referenceImageID == null) {
+    if (referenceImageID == null) {
       return "";
     } else {
       return "https://cdn2.thedogapi.com/images/" +
-          this.referenceImageID! +
+          referenceImageID! +
           ".jpg";
     }
   }

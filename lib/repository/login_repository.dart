@@ -2,8 +2,8 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:retrofit_project/ApiClients/login_api_client.dart';
-import 'package:retrofit_project/Model/api_response.dart';
-import 'package:retrofit_project/Model/login.dart';
+import 'package:retrofit_project/model/api_response.dart';
+import 'package:retrofit_project/model/login.dart';
 
 class LoginRepository {
   final LoginRestClient _client;
@@ -13,12 +13,13 @@ class LoginRepository {
   Future<ApiResponse> register(Login login) async {
     return await _client
         .register(login)
-        .then((value) =>
-            ApiResponse(ApiResponseType.OK, jsonDecode(value)["message"]))
+        .then((value) => (jsonDecode(value)["code"] == 0)
+            ? ApiResponse(ApiResponseType.ok, jsonDecode(value)["message"])
+            : ApiResponse(
+                ApiResponseType.unauthorized, jsonDecode(value)["message"]))
         .catchError((e) {
       int errorCode = 0;
       String errorMessage = "";
-      print(e);
       switch (e.runtimeType) {
         case DioError:
           final res = (e as DioError).response;
@@ -30,8 +31,6 @@ class LoginRepository {
         default:
           errorMessage = e;
       }
-      print("there is an error : $errorCode -> $errorMessage");
-
       var apiResponseType = ApiResponse.convert(errorCode);
       return ApiResponse(apiResponseType, errorMessage);
     });
@@ -40,12 +39,13 @@ class LoginRepository {
   Future<ApiResponse> signIn(Login login) async {
     return await _client
         .signIn(login)
-        .then((value) =>
-            ApiResponse(ApiResponseType.OK, jsonDecode(value)["message"]))
+        .then((value) => (jsonDecode(value)["code"] == 0)
+            ? ApiResponse(ApiResponseType.ok, jsonDecode(value)["message"])
+            : ApiResponse(
+                ApiResponseType.unauthorized, jsonDecode(value)["message"]))
         .catchError((e) {
       int errorCode = 0;
       String errorMessage = "";
-      print(e);
       switch (e.runtimeType) {
         case DioError:
           final res = (e as DioError).response;
@@ -57,8 +57,6 @@ class LoginRepository {
         default:
           errorMessage = e;
       }
-      print("there is an error : $errorCode -> $errorMessage");
-
       var apiResponseType = ApiResponse.convert(errorCode);
       return ApiResponse(apiResponseType, errorMessage);
     });
